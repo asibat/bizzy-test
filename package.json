@@ -1,0 +1,16 @@
+{
+  "name": "shopping-basket-discount-system",
+  "version": "1.0.0",
+  "description": "Technical assignment: Shopping basket with discount rule engine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "discount",
+    "shopping-basket",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC"
+}

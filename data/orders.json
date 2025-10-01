@@ -1,0 +1,60 @@
+[
+  {
+    "id": "order-001",
+    "customerId": "cust-001",
+    "date": "2024-08-15",
+    "items": [
+      {
+        "productId": "prod-001",
+        "quantity": 1,
+        "priceAtPurchase": 1299.99
+      },
+      {
+        "productId": "prod-002",
+        "quantity": 2,
+        "priceAtPurchase": 29.99
+      }
+    ],
+    "subtotal": 1359.97,
+    "discount": 135.99,
+    "total": 1223.98,
+    "status": "completed"
+  },
+  {
+    "id": "order-002",
+    "customerId": "cust-005",
+    "date": "2024-09-10",
+    "items": [
+      {
+        "productId": "prod-003",
+        "quantity": 1,
+        "priceAtPurchase": 49.99
+      }
+    ],
+    "subtotal": 49.99,
+    "discount": 0,
+    "total": 49.99,
+    "status": "completed"
+  },
+  {
+    "id": "order-003",
+    "customerId": "cust-003",
+    "date": "2024-09-25",
+    "items": [
+      {
+        "productId": "prod-002",
+        "quantity": 3,
+        "priceAtPurchase": 29.99
+      },
+      {
+        "productId": "prod-003",
+        "quantity": 1,
+        "priceAtPurchase": 49.99
+      }
+    ],
+    "subtotal": 139.96,
+    "discount": 9.00,
+    "total": 130.96,
+    "status": "completed"
+  }
+]

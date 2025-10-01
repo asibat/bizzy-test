@@ -1,0 +1,26 @@
+[
+  {
+    "id": "prod-001",
+    "name": "Laptop Pro 15",
+    "description": "High-performance laptop with 15-inch display",
+    "price": 1299.99,
+    "category": "Electronics",
+    "sku": "LAP-PRO-15"
+  },
+  {
+    "id": "prod-002",
+    "name": "Wireless Mouse",
+    "description": "Ergonomic wireless mouse with precision tracking",
+    "price": 29.99,
+    "category": "Accessories",
+    "sku": "MOUSE-WL-01"
+  },
+  {
+    "id": "prod-003",
+    "name": "USB-C Hub",
+    "description": "7-in-1 USB-C hub with HDMI and card reader",
+    "price": 49.99,
+    "category": "Accessories",
+    "sku": "HUB-USBC-7"
+  }
+]
