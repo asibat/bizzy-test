@@ -5,7 +5,8 @@
     "description": "High-performance laptop with 15-inch display",
     "price": 1299.99,
     "category": "Electronics",
-    "sku": "LAP-PRO-15"
+    "sku": "LAP-PRO-15",
+    "imageUrl": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   },
   {
     "id": "prod-002",
@@ -13,7 +14,8 @@
     "description": "Ergonomic wireless mouse with precision tracking",
     "price": 29.99,
     "category": "Accessories",
-    "sku": "MOUSE-WL-01"
+    "sku": "MOUSE-WL-01",
+    "imageUrl": "https://images.unsplash.com/photo-1527814050087-3793815479db?q=80&w=1328&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   },
   {
     "id": "prod-003",
@@ -21,6 +23,70 @@
     "description": "7-in-1 USB-C hub with HDMI and card reader",
     "price": 49.99,
     "category": "Accessories",
-    "sku": "HUB-USBC-7"
+    "sku": "HUB-USBC-7",
+    "imageUrl": "https://images.unsplash.com/photo-1616578273461-3a99ce422de6?q=80&w=928&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    "id": "prod-004",
+    "name": "Bluetooth Headphones",
+    "description": "Noise-cancelling over-ear Bluetooth headphones",
+    "price": 129.99,
+    "category": "Electronics",
+    "sku": "HEAD-BT-01",
+    "imageUrl": "https://images.unsplash.com/photo-1631281637573-14de1a1968fd?q=80&w=1295&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    "id": "prod-005",
+    "name": "Smartphone Stand",
+    "description": "Adjustable aluminum stand for smartphones",
+    "price": 19.99,
+    "category": "Accessories",
+    "sku": "STAND-SM-ADJ",
+    "imageUrl": "https://plus.unsplash.com/premium_photo-1681718166365-9ae0a5d208a7?q=80&w=1357&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    "id": "prod-006",
+    "name": "Mechanical Keyboard",
+    "description": "RGB backlit mechanical keyboard with blue switches",
+    "price": 99.99,
+    "category": "Electronics",
+    "sku": "KEY-RGB-MECH",
+    "imageUrl": "https://images.unsplash.com/photo-1558050032-160f36233a07?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    "id": "prod-007",
+    "name": "Portable SSD 1TB",
+    "description": "High-speed portable solid-state drive, 1TB",
+    "price": 159.99,
+    "category": "Electronics",
+    "sku": "SSD-P1TB",
+    "imageUrl": "https://images.unsplash.com/photo-1719937050792-a6a15d899281?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    "id": "prod-008",
+    "name": "Webcam Pro 1080p",
+    "description": "HD 1080p webcam with built-in microphone",
+    "price": 59.99,
+    "category": "Electronics",
+    "sku": "WEBCAM-1080P",
+    "imageUrl": "https://images.unsplash.com/photo-1623949556303-b0d17d198863?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    "id": "prod-009",
+    "name": "Wireless Charger Pad",
+    "description": "Qi-certified fast wireless charging pad",
+    "price": 34.99,
+    "category": "Accessories",
+    "sku": "CHRG-QI-PAD",
+    "imageUrl": "https://images.unsplash.com/photo-1633381638729-27f730955c23?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    "id": "prod-010",
+    "name": "Noise Cancelling Earbuds",
+    "description": "Wireless in-ear earbuds with active noise cancellation",
+    "price": 79.99,
+    "category": "Electronics",
+    "sku": "BUDS-NC-01",
+    "imageUrl": "https://images.unsplash.com/photo-1722439667098-f32094e3b1d4?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   }
 ]
