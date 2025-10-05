@@ -1,11 +1,17 @@
-import React, { createContext, useContext, useEffect, useReducer } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useCallback,
+} from "react";
 import type { Product } from "../types/Product";
 import {
   ADD_TO_BASKET,
   REMOVE_BASKET_ITEM,
   UPDATE_BASKET_ITEM,
 } from "../graphql/mutations";
-import { useMutation, useQuery } from "@apollo/client/react";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client/react";
 import { GET_BASKET } from "../graphql/queries";
 import type { BasketItem } from "../generated/graphql";
 import type { BasketQueryResult, BasketState } from "../types/Basket";
@@ -50,6 +56,7 @@ function basketReducer(state: BasketState, action: BasketAction): BasketState {
       );
       if (existing) {
         return {
+          ...state,
           items: state.items.map((item) =>
             item.id === action.product.id
               ? { ...item, quantity: item.quantity + 1 }
@@ -58,20 +65,26 @@ function basketReducer(state: BasketState, action: BasketAction): BasketState {
         };
       }
       return {
+        ...state,
         items: [
           ...state.items,
           {
             ...action.product,
             quantity: 1,
             productId: action.product.id,
+            id: action.product.id,
           },
         ],
       };
     }
     case "REMOVE":
-      return { items: state.items.filter((item) => item.id !== action.id) };
+      return {
+        ...state,
+        items: state.items.filter((item) => item.id !== action.id),
+      };
     case "INCREMENT":
       return {
+        ...state,
         items: state.items.map((item) =>
           item.id === action.id
             ? { ...item, quantity: item.quantity + 1 }
@@ -80,6 +93,7 @@ function basketReducer(state: BasketState, action: BasketAction): BasketState {
       };
     case "DECREMENT":
       return {
+        ...state,
         items: state.items
           .map((item) =>
             item.id === action.id
@@ -88,14 +102,49 @@ function basketReducer(state: BasketState, action: BasketAction): BasketState {
           )
           .filter((item) => item.quantity > 0),
       };
-    case "HYDRATE":
+    case "HYDRATE": {
+      if (state.items.length === 0) {
+        // First HYDRATE (cold load), use server order
+        return {
+          items: action.items.map((item) => ({
+            ...item,
+            id: item.productId,
+          })),
+          subtotal: action.subtotal,
+          discount: action.discount,
+          discountBreakdown: action.discountBreakdown,
+          total: action.total,
+        };
+      }
+
+      // After first HYDRATE: sort backend items by local order
+      const localOrder = state.items.map((item) => item.productId);
+      const itemsFromServer = action.items.map((item) => ({
+        ...item,
+        id: item.productId,
+      }));
+
+      // Sort all items from the backend with local order first
+      const sorted = [
+        ...itemsFromServer
+          .filter((item) => localOrder.includes(item.productId))
+          .sort(
+            (a, b) =>
+              localOrder.indexOf(a.productId) - localOrder.indexOf(b.productId)
+          ),
+        ...itemsFromServer.filter(
+          (item) => !localOrder.includes(item.productId)
+        ),
+      ];
+
       return {
-        items: action.items,
+        items: sorted,
         subtotal: action.subtotal,
         discount: action.discount,
         discountBreakdown: action.discountBreakdown,
         total: action.total,
       };
+    }
     default:
       return state;
   }
@@ -106,7 +155,9 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
   const [addToBasketMutation] = useMutation(ADD_TO_BASKET);
   const [updateBasketItem] = useMutation(UPDATE_BASKET_ITEM);
   const [removeBasketItem] = useMutation(REMOVE_BASKET_ITEM);
+  const client = useApolloClient();
 
+  // 1. Hydrate on first (mount) load
   const { data } = useQuery<BasketQueryResult>(GET_BASKET, {
     variables: { customerId: DEFAULT_CUSTOMER_ID },
     fetchPolicy: "network-only",
@@ -118,10 +169,7 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
         data.getBasket;
       dispatch({
         type: "HYDRATE",
-        items: items.map((item) => ({
-          ...item,
-          id: item.productId,
-        })),
+        items,
         subtotal,
         discount,
         discountBreakdown,
@@ -129,6 +177,27 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
       });
     }
   }, [data]);
+
+  // 2. Silent/Background summary/totals refetch (also updates items)
+  const silentlyRefetchSummary = useCallback(async () => {
+    const { data } = await client.query<BasketQueryResult>({
+      query: GET_BASKET,
+      variables: { customerId: DEFAULT_CUSTOMER_ID },
+      fetchPolicy: "network-only",
+    });
+    if (data?.getBasket) {
+      const { items, subtotal, discount, discountBreakdown, total } =
+        data.getBasket;
+      dispatch({
+        type: "HYDRATE",
+        items,
+        subtotal,
+        discount,
+        discountBreakdown,
+        total,
+      });
+    }
+  }, [client]);
 
   const addToBasket = async (product: Product) => {
     dispatch({ type: "ADD", product });
@@ -139,6 +208,7 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
         quantity: 1,
       },
     });
+    silentlyRefetchSummary();
   };
 
   const incrementItem = async (item: BasketItem) => {
@@ -150,6 +220,7 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
         quantity: item.quantity + 1,
       },
     });
+    silentlyRefetchSummary();
   };
 
   const decrementItem = async (item: BasketItem) => {
@@ -164,16 +235,19 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
           quantity: item.quantity - 1,
         },
       });
+      silentlyRefetchSummary();
     }
   };
 
   const removeItem = async (item: BasketItem) => {
+    dispatch({ type: "REMOVE", id: item.id });
     await removeBasketItem({
       variables: {
         customerId: DEFAULT_CUSTOMER_ID,
         productId: item.productId,
       },
     });
+    silentlyRefetchSummary();
   };
 
   return (
