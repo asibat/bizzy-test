@@ -1,9 +1,9 @@
 # Bizzy Shopping Basket Monorepo
 
-## Quickstart
 
 ### Backend
-- Set up `.env` with your database URL
+- The app requires a running PostgreSQL DB. Set up `.env` with your database URL
+  - `DATABASE_URL=postgresql://username:password@localhost:5432/your_db_name`
 - Run `npx prisma migrate dev` to create schema
 - Then `npm run dev` to start API server
 
