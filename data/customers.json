@@ -3,24 +3,24 @@
     "id": "cust-001",
     "name": "Alice Johnson",
     "email": "alice.johnson@example.com",
-    "isVip": true,
-    "registeredDate": "2023-01-15",
+    "isVIP": true,
+    "registeredDate": "2023-01-15T00:00:00.000Z",
     "loyaltyPoints": 1250
   },
   {
     "id": "cust-002",
     "name": "Bob Smith",
     "email": "bob.smith@example.com",
-    "isVip": false,
-    "registeredDate": "2024-06-20",
+    "isVIP": false,
+    "registeredDate": "2024-06-20T00:00:00.000Z",
     "loyaltyPoints": 150
   },
   {
     "id": "cust-003",
     "name": "Carol Williams",
     "email": "carol.williams@example.com",
-    "isVip": false,
-    "registeredDate": "2024-03-10",
+    "isVIP": false,
+    "registeredDate": "2024-03-10T00:00:00.000Z",
     "loyaltyPoints": 320
   }
 ]

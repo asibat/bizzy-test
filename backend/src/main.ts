@@ -6,15 +6,20 @@ import { typeDefs } from "./api/schema";
 import { resolvers } from "./api/resolvers";
 import { PrismaClient } from "@prisma/client";
 import { ProductService } from "./application/ProductService";
-import { PrismaProductRepository } from "./infrastructure/repositories/PrismaProductRepository";
+import { PrismaProductRepository } from "./infrastructure/repositories/ProductRepository";
+import { BasketService } from "./application/BasketService";
+import { PrismaBasketRepository } from "./infrastructure/repositories/BasketRepository";
 
 const prisma = new PrismaClient();
 const app = express();
 
 // Repository instances
 const productRepository = new PrismaProductRepository(prisma);
+const basketRepository = new PrismaBasketRepository(prisma);
+
 // Application service instances
 const productService = new ProductService(productRepository);
+const basketService = new BasketService(basketRepository);
 
 const server = new ApolloServer({
   typeDefs,
@@ -23,9 +28,11 @@ const server = new ApolloServer({
     prisma,
     services: {
       productService,
+      basketService,
     },
     repositories: {
       productRepository,
+      basketRepository,
     },
   }),
 });

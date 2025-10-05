@@ -1,5 +1,5 @@
-import { Product } from "../domain/product/Product";
-import { PrismaProductRepository } from "../infrastructure/repositories/PrismaProductRepository";
+import { Product } from "../domain/Product";
+import { PrismaProductRepository } from "../infrastructure/repositories/ProductRepository";
 
 export class ProductService {
   constructor(private productRepository: PrismaProductRepository) {}
