@@ -8,19 +8,23 @@ import {
 import { useMutation, useQuery } from "@apollo/client/react";
 import { GET_BASKET } from "../graphql/queries";
 import type { BasketItem } from "../generated/graphql";
-import type { BasketQueryResult } from "../types/Basket";
+import type { BasketQueryResult, BasketState } from "../types/Basket";
+import type { DiscountResult } from "../types/DiscountRule";
 export const DEFAULT_CUSTOMER_ID = "cust-001";
-
-type BasketState = {
-  items: BasketItem[];
-};
 
 type BasketAction =
   | { type: "ADD"; product: Product }
   | { type: "REMOVE"; id: string }
   | { type: "INCREMENT"; id: string }
   | { type: "DECREMENT"; id: string }
-  | { type: "HYDRATE"; items: BasketItem[] };
+  | {
+      type: "HYDRATE";
+      items: BasketItem[];
+      subtotal?: number;
+      discount?: number;
+      discountBreakdown?: DiscountResult[];
+      total?: number;
+    };
 
 const BasketContext = createContext<{
   basket: BasketState;
@@ -87,6 +91,10 @@ function basketReducer(state: BasketState, action: BasketAction): BasketState {
     case "HYDRATE":
       return {
         items: action.items,
+        subtotal: action.subtotal,
+        discount: action.discount,
+        discountBreakdown: action.discountBreakdown,
+        total: action.total,
       };
     default:
       return state;
@@ -105,13 +113,19 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    if (data?.getBasket?.items) {
+    if (data?.getBasket) {
+      const { items, subtotal, discount, discountBreakdown, total } =
+        data.getBasket;
       dispatch({
         type: "HYDRATE",
-        items: data.getBasket.items.map((item) => ({
+        items: items.map((item) => ({
           ...item,
           id: item.productId,
         })),
+        subtotal,
+        discount,
+        discountBreakdown,
+        total,
       });
     }
   }, [data]);
@@ -135,9 +149,6 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
         productId: item.productId,
         quantity: item.quantity + 1,
       },
-      refetchQueries: [
-        { query: GET_BASKET, variables: { customerId: DEFAULT_CUSTOMER_ID } },
-      ],
     });
   };
 
@@ -152,9 +163,6 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
           productId: item.productId,
           quantity: item.quantity - 1,
         },
-        refetchQueries: [
-          { query: GET_BASKET, variables: { customerId: DEFAULT_CUSTOMER_ID } },
-        ],
       });
     }
   };
@@ -165,9 +173,6 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
         customerId: DEFAULT_CUSTOMER_ID,
         productId: item.productId,
       },
-      refetchQueries: [
-        { query: GET_BASKET, variables: { customerId: DEFAULT_CUSTOMER_ID } },
-      ],
     });
   };
 

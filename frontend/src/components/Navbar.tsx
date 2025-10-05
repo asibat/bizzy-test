@@ -27,6 +27,14 @@ export default function Navbar() {
           <Button
             color="inherit"
             component={RouterLink}
+            to="/admin/discount-rules"
+            className="hover:bg-blue-700 transition"
+          >
+            discount Rules
+          </Button>
+          <Button
+            color="inherit"
+            component={RouterLink}
             to="/products"
             className="hover:bg-blue-700 transition"
           >
