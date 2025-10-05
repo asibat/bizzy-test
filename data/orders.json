@@ -22,7 +22,7 @@
   },
   {
     "id": "order-002",
-    "customerId": "cust-005",
+    "customerId": "cust-002",
     "date": "2024-09-10",
     "items": [
       {
@@ -53,7 +53,7 @@
       }
     ],
     "subtotal": 139.96,
-    "discount": 9.00,
+    "discount": 9.0,
     "total": 130.96,
     "status": "completed"
   }
