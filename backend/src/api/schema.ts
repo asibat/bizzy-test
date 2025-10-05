@@ -61,6 +61,8 @@ export const typeDefs = gql`
 
   type Mutation {
     addToBasket(customerId: ID!, productId: ID!, quantity: Int!): Basket
+    updateBasketItem(customerId: ID!, productId: ID!, quantity: Int!): Basket
+    removeBasketItem(customerId: ID!, productId: ID!): Basket
     checkout(customerId: ID!): Order!
   }
 `;

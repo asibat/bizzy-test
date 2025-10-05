@@ -2,7 +2,7 @@ import { useBasket } from "../context/BasketContext";
 import { useProducts } from "../context/ProductContext";
 
 export default function BasketPage() {
-  const { basket, dispatch } = useBasket();
+  const { basket, decrementItem, removeItem, incrementItem } = useBasket();
   const { products, loading: productsLoading } = useProducts();
 
   if (productsLoading) return <div>Loading products...</div>;
@@ -37,6 +37,7 @@ export default function BasketPage() {
       typeof item.product?.price === "number" ? item.product.price : 0;
     return sum + price * item.quantity;
   }, 0);
+
   return (
     <div className="max-w-3xl mx-auto py-10 px-4">
       <h2 className="text-3xl font-bold mb-6">Your Basket</h2>
@@ -64,8 +65,7 @@ export default function BasketPage() {
               <div className="flex items-center border rounded-lg overflow-hidden">
                 <button
                   className="bg-gray-100 text-lg px-2 hover:bg-blue-100"
-                  disabled={item.quantity === 1}
-                  onClick={() => dispatch({ type: "DECREMENT", id: item.id })}
+                  onClick={() => decrementItem(item)}
                 >
                   −
                 </button>
@@ -74,14 +74,14 @@ export default function BasketPage() {
                 </span>
                 <button
                   className="bg-gray-100 text-lg px-2 hover:bg-blue-100"
-                  onClick={() => dispatch({ type: "INCREMENT", id: item.id })}
+                  onClick={() => incrementItem(item)}
                 >
                   +
                 </button>
               </div>
               <button
                 className="text-red-500 text-xs hover:underline"
-                onClick={() => dispatch({ type: "REMOVE", id: item.id })}
+                onClick={() => removeItem(item)}
               >
                 Remove
               </button>

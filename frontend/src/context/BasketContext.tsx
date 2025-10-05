@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import type { Product } from "../types/Product";
-import { ADD_TO_BASKET } from "../graphql/mutations";
+import {
+  ADD_TO_BASKET,
+  REMOVE_BASKET_ITEM,
+  UPDATE_BASKET_ITEM,
+} from "../graphql/mutations";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { GET_BASKET } from "../graphql/queries";
 import type { BasketItem } from "../generated/graphql";
@@ -22,7 +26,17 @@ const BasketContext = createContext<{
   basket: BasketState;
   dispatch: React.Dispatch<BasketAction>;
   addToBasket: (product: Product) => void;
-}>({ basket: { items: [] }, dispatch: () => {}, addToBasket: () => {} });
+  incrementItem: (item: BasketItem) => void;
+  decrementItem: (item: BasketItem) => void;
+  removeItem: (item: BasketItem) => void;
+}>({
+  basket: { items: [] },
+  dispatch: () => {},
+  addToBasket: () => {},
+  incrementItem: () => {},
+  decrementItem: () => {},
+  removeItem: () => {},
+});
 
 function basketReducer(state: BasketState, action: BasketAction): BasketState {
   switch (action.type) {
@@ -82,6 +96,8 @@ function basketReducer(state: BasketState, action: BasketAction): BasketState {
 export function BasketProvider({ children }: { children: React.ReactNode }) {
   const [basket, dispatch] = useReducer(basketReducer, { items: [] });
   const [addToBasketMutation] = useMutation(ADD_TO_BASKET);
+  const [updateBasketItem] = useMutation(UPDATE_BASKET_ITEM);
+  const [removeBasketItem] = useMutation(REMOVE_BASKET_ITEM);
 
   const { data } = useQuery<BasketQueryResult>(GET_BASKET, {
     variables: { customerId: DEFAULT_CUSTOMER_ID },
@@ -111,8 +127,61 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const incrementItem = async (item: BasketItem) => {
+    dispatch({ type: "INCREMENT", id: item.id });
+    await updateBasketItem({
+      variables: {
+        customerId: DEFAULT_CUSTOMER_ID,
+        productId: item.productId,
+        quantity: item.quantity + 1,
+      },
+      refetchQueries: [
+        { query: GET_BASKET, variables: { customerId: DEFAULT_CUSTOMER_ID } },
+      ],
+    });
+  };
+
+  const decrementItem = async (item: BasketItem) => {
+    if (item.quantity === 1) {
+      await removeItem(item);
+    } else {
+      dispatch({ type: "DECREMENT", id: item.id });
+      await updateBasketItem({
+        variables: {
+          customerId: DEFAULT_CUSTOMER_ID,
+          productId: item.productId,
+          quantity: item.quantity - 1,
+        },
+        refetchQueries: [
+          { query: GET_BASKET, variables: { customerId: DEFAULT_CUSTOMER_ID } },
+        ],
+      });
+    }
+  };
+
+  const removeItem = async (item: BasketItem) => {
+    await removeBasketItem({
+      variables: {
+        customerId: DEFAULT_CUSTOMER_ID,
+        productId: item.productId,
+      },
+      refetchQueries: [
+        { query: GET_BASKET, variables: { customerId: DEFAULT_CUSTOMER_ID } },
+      ],
+    });
+  };
+
   return (
-    <BasketContext.Provider value={{ basket, dispatch, addToBasket }}>
+    <BasketContext.Provider
+      value={{
+        basket,
+        dispatch,
+        addToBasket,
+        incrementItem,
+        decrementItem,
+        removeItem,
+      }}
+    >
       {children}
     </BasketContext.Provider>
   );
