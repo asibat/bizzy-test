@@ -32,21 +32,6 @@ const basketService = new BasketService(
 );
 const discountRuleService = new DiscountRuleService(discountRuleRepository);
 
-export type GraphQLContext = {
-  prisma: PrismaClient;
-  services: {
-    productService: ProductService;
-    basketService: BasketService;
-    discountRuleService: DiscountRuleService;
-  };
-  repositories: {
-    productRepository: PrismaProductRepository;
-    basketRepository: PrismaBasketRepository;
-    discountRuleRepository: PrismaDiscountRuleRepository;
-    customerRepository: PrismaCustomerRepository;
-  };
-};
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,
@@ -55,6 +40,7 @@ const server = new ApolloServer({
     services: {
       productService,
       basketService,
+      discountRuleService,
     },
     repositories: {
       productRepository,

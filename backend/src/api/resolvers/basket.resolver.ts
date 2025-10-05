@@ -1,4 +1,4 @@
-import { GraphQLContext } from "../../main";
+import { GQLContext } from "../../types/context";
 
 export const basketResolvers = {
   Mutation: {
@@ -9,7 +9,7 @@ export const basketResolvers = {
         productId,
         quantity,
       }: { customerId: string; productId: string; quantity: number },
-      context: GraphQLContext
+      context: GQLContext
     ) => {
       if (
         !customerId ||
@@ -39,7 +39,7 @@ export const basketResolvers = {
         productId,
         quantity,
       }: { customerId: string; productId: string; quantity: number },
-      context: GraphQLContext
+      context: GQLContext
     ) => {
       if (!customerId || !productId || typeof quantity !== "number") {
         throw new Error(
@@ -62,7 +62,7 @@ export const basketResolvers = {
     removeBasketItem: async (
       _: any,
       { customerId, productId }: { customerId: string; productId: string },
-      context: GraphQLContext
+      context: GQLContext
     ) => {
       if (!customerId || !productId) {
         throw new Error(
@@ -83,7 +83,7 @@ export const basketResolvers = {
   },
 
   Query: {
-    getBasket: async (_: any, { customerId }: any, context: GraphQLContext) => {
+    getBasket: async (_: any, { customerId }: any, context: GQLContext) => {
       if (!customerId) {
         throw new Error("customerId required");
       }

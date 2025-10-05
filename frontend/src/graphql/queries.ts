@@ -43,3 +43,19 @@ export const DISCOUNT_RULES_QUERY = gql`
     }
   }
 `;
+
+export const DISCOUNT_RULE_TYPES_QUERY = gql`
+  query GetDiscountRuleTypes {
+    discountRuleTypes {
+      type
+      label
+      description
+      fields {
+        name
+        label
+        type
+        options
+      }
+    }
+  }
+`;

@@ -64,16 +64,42 @@ export const typeDefs = gql`
   }
 
   type DiscountRule {
-    id: ID!
+    id: String!
     type: String!
     name: String!
     description: String
+    config: JSON
+    enabled: Boolean
   }
 
   input DiscountRuleInput {
     type: String!
     name: String!
     description: String
+    config: JSON!
+    enabled: Boolean
+  }
+
+  type DiscountRuleTypeField {
+    name: String!
+    label: String!
+    type: String! # e.g. 'number' | 'text' | 'select'
+    options: [String!] # if selectable
+  }
+
+  type DiscountRuleType {
+    type: String!
+    label: String!
+    description: String
+    fields: [DiscountRuleTypeField!]!
+  }
+
+  input CreateDiscountRuleInput {
+    type: String!
+    name: String!
+    description: String
+    config: JSON!
+    enabled: Boolean
   }
 
   type Query {
@@ -91,5 +117,6 @@ export const typeDefs = gql`
     createDiscountRule(input: DiscountRuleInput!): DiscountRule!
     updateDiscountRule(id: ID!, input: DiscountRuleInput!): DiscountRule!
     deleteDiscountRule(id: ID!): Boolean!
+    discountRuleTypes: [DiscountRuleType!]!
   }
 `;

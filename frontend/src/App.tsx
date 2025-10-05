@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import CatalogPage from "./pages/CatalogPage";
 import BasketPage from "./pages/BasketPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import { DiscountRulesAdmin } from "./pages/DiscountRulesAdmin";
+import DiscountRulesAdmin from "./pages/DiscountRulesAdmin";
 
 function App() {
   return (

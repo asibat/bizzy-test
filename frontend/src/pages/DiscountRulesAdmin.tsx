@@ -1,128 +1,265 @@
-// pages/DiscountRulesAdmin.tsx
-
 import React, { useState } from "react";
-import { useDiscountRules } from "../context/DiscountRuleContext";
 import {
+  Box,
+  Typography,
+  Button,
   Card,
   CardContent,
   CardActions,
-  Typography,
-  Button,
-  TextField,
   Grid,
-  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Select,
+  MenuItem,
+  Chip,
+  Stack,
+  IconButton,
 } from "@mui/material";
+import { Add, Edit, Delete } from "@mui/icons-material";
+import { useDiscountRules } from "../context/DiscountRuleContext";
 import type { DiscountRule } from "../types/DiscountRule";
 
-export function DiscountRulesAdmin() {
-  const { discountRules, loading, error, updateDiscountRule } =
-    useDiscountRules();
-  const [editId, setEditId] = useState<string | null>(null);
-  const [editValues, setEditValues] = useState<Partial<DiscountRule>>({});
-  const [saving, setSaving] = useState<boolean>(false);
+const RULE_TYPE_FIELDS = {
+  quantity: [
+    { name: "productId", label: "Product ID", type: "text" },
+    { name: "minQuantity", label: "Min Quantity", type: "number" },
+    { name: "percentOff", label: "Percent Off (%)", type: "number" },
+  ],
+  vip: [{ name: "percentOff", label: "Percent Off (%)", type: "number" }],
+};
 
-  const handleEdit = (rule: DiscountRule) => {
-    setEditId(rule.id);
-    setEditValues(rule);
-  };
-
-  const handleChange = (field: string, value: string) => {
-    setEditValues((prev: any) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSave = async () => {
-    if (editId) {
-      setSaving(true);
-      // Remove the id from the input sent to the mutation
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { id, ...input } = editValues;
-      await updateDiscountRule(editId, input);
-      setSaving(false);
+function prettyConfig(type: string, config: any) {
+  if (type === "quantity") {
+    if (
+      !config ||
+      config.minQuantity == null ||
+      !config.productId ||
+      config.percentOff == null
+    ) {
+      return "—";
     }
-    setEditId(null);
-    setEditValues({});
+    return `Buy ${config.minQuantity}+ of ${config.productId}, ${config.percentOff}% off`;
+  }
+  if (type === "vip") {
+    if (!config || config.percentOff == null) {
+      return "—";
+    }
+    return `${config.percentOff}% for VIP`;
+  }
+  return config ? JSON.stringify(config) : "—";
+}
+
+export default function DiscountRulesAdmin() {
+  const {
+    discountRules,
+    createDiscountRule,
+    updateDiscountRule,
+    deleteDiscountRule,
+  } = useDiscountRules();
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState<
+    Omit<DiscountRule, "id" | "createdAt" | "updatedAt">
+  >({
+    type: "",
+    name: "",
+    description: "",
+    config: {},
+    enabled: true,
+  });
+
+  const typeFields =
+    RULE_TYPE_FIELDS[form.type as keyof typeof RULE_TYPE_FIELDS] || [];
+
+  const openDialog = (rule?: DiscountRule) => {
+    if (rule) {
+      setForm({
+        type: rule.type,
+        name: rule.name,
+        description: rule.description,
+        config: rule.config || {},
+        enabled: rule.enabled,
+      });
+      setEditingId(rule.id);
+    } else {
+      setForm({
+        type: "",
+        name: "",
+        description: "",
+        config: {},
+        enabled: true,
+      });
+      setEditingId(null);
+    }
+    setOpen(true);
+  };
+  const closeDialog = () => setOpen(false);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
+  ) => {
+    const { name, value, type: fieldType } = e.target as HTMLInputElement;
+    if (typeFields.some((f) => f.name === name)) {
+      setForm((f) => ({
+        ...f,
+        config: {
+          ...f.config,
+          [name]: fieldType === "number" ? Number(value) : value,
+        },
+      }));
+    } else {
+      setForm((f) => ({ ...f, [name!]: value }));
+    }
   };
 
-  const handleCancel = () => {
-    setEditId(null);
-    setEditValues({});
+  const submitRule = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.type || !form.name) return;
+    if (editingId) await updateDiscountRule(editingId, form);
+    else await createDiscountRule(form);
+    setOpen(false);
   };
-
-  if (loading) return <div>Loading…</div>;
-  if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <Box p={2}>
-      <Typography variant="h5" gutterBottom>
-        Discount Rules Admin
-      </Typography>
-      <Grid container spacing={2}>
+    <Box maxWidth={1000} mx="auto" py={5}>
+      <Box display="flex" alignItems="center" mb={4}>
+        <Typography flex={1} variant="h4" fontWeight={700}>
+          Discount Rules
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Add />}
+          sx={{ borderRadius: 2, fontWeight: 600, fontSize: 16 }}
+          onClick={() => openDialog()}
+        >
+          New Rule
+        </Button>
+      </Box>
+      <Grid container spacing={3}>
         {discountRules.map((rule) => (
           <Grid item xs={12} sm={6} md={4} key={rule.id}>
             <Card>
               <CardContent>
-                {editId === rule.id ? (
-                  <>
-                    <TextField
-                      label="Name"
-                      fullWidth
-                      margin="dense"
-                      value={editValues.name}
-                      onChange={(e) => handleChange("name", e.target.value)}
-                    />
-                    <TextField
-                      label="Type"
-                      fullWidth
-                      margin="dense"
-                      value={editValues.type}
-                      onChange={(e) => handleChange("type", e.target.value)}
-                    />
-                    <TextField
-                      label="Description"
-                      fullWidth
-                      margin="dense"
-                      value={editValues.description ?? ""}
-                      onChange={(e) =>
-                        handleChange("description", e.target.value)
-                      }
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Typography variant="h6">{rule.name}</Typography>
-                    <Typography color="text.secondary">{rule.type}</Typography>
-                    <Typography variant="body2">{rule.description}</Typography>
-                  </>
-                )}
+                <Box mb={1} display="flex" alignItems="center" gap={1}>
+                  <Chip
+                    label={rule.enabled ? "Enabled" : "Disabled"}
+                    color={rule.enabled ? "success" : "default"}
+                    variant="outlined"
+                    size="small"
+                  />
+                  <Chip
+                    label={rule.type.toUpperCase()}
+                    color="info"
+                    size="small"
+                  />
+                </Box>
+                <Typography fontWeight={600} variant="h6">
+                  {rule.name}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  {rule.description}
+                </Typography>
+                <Typography
+                  mt={1}
+                  variant="body2"
+                  fontFamily="monospace"
+                  color="primary"
+                >
+                  {prettyConfig(rule.type, rule.config)}
+                </Typography>
               </CardContent>
               <CardActions>
-                {editId === rule.id ? (
-                  <>
-                    <Button
-                      color="primary"
-                      onClick={handleSave}
-                      variant="contained"
-                      size="small"
-                      disabled={saving}
-                    >
-                      {saving ? "Saving..." : "Save"}
-                    </Button>
-                    <Button onClick={handleCancel} size="small">
-                      Cancel
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button onClick={() => handleEdit(rule)} size="small">
-                      Edit
-                    </Button>
-                  </>
-                )}
+                <IconButton color="primary" onClick={() => openDialog(rule)}>
+                  <Edit />
+                </IconButton>
+                <IconButton
+                  color="error"
+                  onClick={() => deleteDiscountRule(rule.id)}
+                >
+                  <Delete />
+                </IconButton>
               </CardActions>
             </Card>
           </Grid>
         ))}
+        {discountRules.length === 0 && (
+          <Grid item xs={12}>
+            <Box mt={6} textAlign="center" color="text.secondary">
+              No discount rules exist yet.
+            </Box>
+          </Grid>
+        )}
       </Grid>
+      {/* Modal Dialog for Add/Edit */}
+      <Dialog open={open} onClose={closeDialog} maxWidth="sm" fullWidth>
+        <form onSubmit={submitRule}>
+          <DialogTitle>
+            {editingId ? "Edit Discount Rule" : "Create New Discount Rule"}
+          </DialogTitle>
+          <DialogContent>
+            <Stack spacing={2}>
+              <Select
+                name="type"
+                value={form.type}
+                onChange={handleInputChange}
+                fullWidth
+                disabled={!!editingId}
+                displayEmpty
+                required
+              >
+                <MenuItem disabled value="">
+                  <em>Select type...</em>
+                </MenuItem>
+                {Object.keys(RULE_TYPE_FIELDS).map((type) => (
+                  <MenuItem value={type} key={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </Select>
+              <TextField
+                label="Name"
+                name="name"
+                value={form.name}
+                onChange={handleInputChange}
+                fullWidth
+                required
+              />
+              <TextField
+                label="Description"
+                name="description"
+                value={form.description}
+                onChange={handleInputChange}
+                fullWidth
+              />
+              {typeFields.map((field) => (
+                <TextField
+                  key={field.name}
+                  name={field.name}
+                  label={field.label}
+                  value={form.config[field.name] ?? ""}
+                  type={field.type}
+                  onChange={handleInputChange}
+                  fullWidth
+                  required
+                />
+              ))}
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeDialog} color="inherit">
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained" color="success">
+              {editingId ? "Update" : "Create"}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
     </Box>
   );
 }
