@@ -1,5 +1,6 @@
 import { DiscountRule } from "./DiscountRule";
 import { QuantityDiscountRule } from "./discountRules/QuantityDiscountRule";
+import { RepeatCustomerDiscountRule } from "./discountRules/RepeatCustomerDiscountRule";
 import { VipCustomerDiscountRule } from "./discountRules/VipCustomerDiscountRule";
 import { WeekendDiscountRule } from "./discountRules/WeekendDiscountRule";
 
@@ -15,6 +16,8 @@ const ruleRegistry: Record<string, DiscountRuleConstructor> = {
   vip: (config) => new VipCustomerDiscountRule(config.percentOff),
   weekend: (config) =>
     new WeekendDiscountRule(config.productId, config.minQty, config.percentOff),
+  repeat: (config) =>
+    new RepeatCustomerDiscountRule(config.minOrders, config.percentOff),
 };
 
 export function registerRule(type: string, ctor: DiscountRuleConstructor) {
@@ -40,3 +43,8 @@ registerRule(
 );
 
 registerRule("vip", (config) => new VipCustomerDiscountRule(config.percentOff));
+registerRule(
+  "repeat",
+  (config) =>
+    new RepeatCustomerDiscountRule(config.minOrders, config.percentOff)
+);

@@ -34,6 +34,11 @@ const RULE_TYPE_FIELDS = {
     { name: "minQty", label: "Min Quantity", type: "number" },
     { name: "percentOff", label: "Percent Off (%)", type: "number" },
   ],
+  repeat: [
+    { name: "productId", label: "Product ID", type: "text" },
+    { name: "minQty", label: "Min Quantity", type: "number" },
+    { name: "percentOff", label: "Percent Off (%)", type: "number" },
+  ],
 };
 
 function prettyConfig(type: string, config: any) {
