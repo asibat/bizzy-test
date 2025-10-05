@@ -1,0 +1,71 @@
+# ----------- Product Queries -----------
+query Products {
+  products {
+    id
+    name
+    description
+    price
+    category
+    sku
+    imageUrl
+  }
+}
+
+query Product($id: ID!) {
+  product(id: $id) {
+    id
+    name
+    description
+    price
+    category
+    sku
+    imageUrl
+  }
+}
+
+# ----------- Basket Queries -----------
+query GetBasket($customerId: ID!) {
+  getBasket(customerId: $customerId) {
+    id
+    customerId
+    updatedAt
+    items {
+      id
+      productId
+      quantity
+    }
+  }
+}
+
+# ----------- Basket Mutations -----------
+mutation AddToBasket($customerId: ID!, $productId: ID!, $quantity: Int!) {
+  addToBasket(customerId: $customerId, productId: $productId, quantity: $quantity) {
+    id
+    customerId
+    updatedAt
+    items {
+      id
+      productId
+      quantity
+    }
+  }
+}
+
+# ----------- Order Mutations -----------
+mutation Checkout($customerId: ID!) {
+  checkout(customerId: $customerId) {
+    id
+    customerId
+    subtotal
+    discount
+    total
+    status
+    createdAt
+    items {
+      id
+      productId
+      quantity
+      unitPrice
+    }
+  }
+}

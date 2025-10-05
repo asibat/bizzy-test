@@ -1,9 +1,11 @@
 import App from "./App.tsx";
 import ReactDOM from "react-dom/client";
+import "./index.css";
 
 import { InMemoryCache, ApolloClient, HttpLink } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { BasketProvider } from "./context/BasketContext.tsx";
+import { ProductProvider } from "./context/ProductContext.tsx";
 
 const client = new ApolloClient({
   link: new HttpLink({ uri: "http://localhost:4000/graphql" }),
@@ -11,9 +13,11 @@ const client = new ApolloClient({
 });
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <BasketProvider>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
-  </BasketProvider>
+  <ApolloProvider client={client}>
+    <ProductProvider>
+      <BasketProvider>
+        <App />
+      </BasketProvider>
+    </ProductProvider>
+  </ApolloProvider>
 );

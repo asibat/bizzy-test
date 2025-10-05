@@ -1,7 +1,11 @@
-import React, { createContext, useContext, useReducer } from "react";
+import React, { createContext, useContext, useEffect, useReducer } from "react";
 import type { Product } from "../types/Product";
-
-type BasketItem = Product & { quantity: number };
+import { ADD_TO_BASKET } from "../graphql/mutations";
+import { useMutation, useQuery } from "@apollo/client/react";
+import { GET_BASKET } from "../graphql/queries";
+import type { BasketItem } from "../generated/graphql";
+import type { BasketQueryResult } from "../types/Basket";
+export const DEFAULT_CUSTOMER_ID = "cust-001";
 
 type BasketState = {
   items: BasketItem[];
@@ -11,12 +15,14 @@ type BasketAction =
   | { type: "ADD"; product: Product }
   | { type: "REMOVE"; id: string }
   | { type: "INCREMENT"; id: string }
-  | { type: "DECREMENT"; id: string };
+  | { type: "DECREMENT"; id: string }
+  | { type: "HYDRATE"; items: BasketItem[] };
 
 const BasketContext = createContext<{
   basket: BasketState;
   dispatch: React.Dispatch<BasketAction>;
-}>({ basket: { items: [] }, dispatch: () => {} });
+  addToBasket: (product: Product) => void;
+}>({ basket: { items: [] }, dispatch: () => {}, addToBasket: () => {} });
 
 function basketReducer(state: BasketState, action: BasketAction): BasketState {
   switch (action.type) {
@@ -34,7 +40,14 @@ function basketReducer(state: BasketState, action: BasketAction): BasketState {
         };
       }
       return {
-        items: [...state.items, { ...action.product, quantity: 1 }],
+        items: [
+          ...state.items,
+          {
+            ...action.product,
+            quantity: 1,
+            productId: action.product.id,
+          },
+        ],
       };
     }
     case "REMOVE":
@@ -57,6 +70,10 @@ function basketReducer(state: BasketState, action: BasketAction): BasketState {
           )
           .filter((item) => item.quantity > 0),
       };
+    case "HYDRATE":
+      return {
+        items: action.items,
+      };
     default:
       return state;
   }
@@ -64,8 +81,38 @@ function basketReducer(state: BasketState, action: BasketAction): BasketState {
 
 export function BasketProvider({ children }: { children: React.ReactNode }) {
   const [basket, dispatch] = useReducer(basketReducer, { items: [] });
+  const [addToBasketMutation] = useMutation(ADD_TO_BASKET);
+
+  const { data } = useQuery<BasketQueryResult>(GET_BASKET, {
+    variables: { customerId: DEFAULT_CUSTOMER_ID },
+    fetchPolicy: "network-only",
+  });
+
+  useEffect(() => {
+    if (data?.getBasket?.items) {
+      dispatch({
+        type: "HYDRATE",
+        items: data.getBasket.items.map((item) => ({
+          ...item,
+          id: item.productId,
+        })),
+      });
+    }
+  }, [data]);
+
+  const addToBasket = async (product: Product) => {
+    dispatch({ type: "ADD", product });
+    await addToBasketMutation({
+      variables: {
+        customerId: DEFAULT_CUSTOMER_ID,
+        productId: product.id,
+        quantity: 1,
+      },
+    });
+  };
+
   return (
-    <BasketContext.Provider value={{ basket, dispatch }}>
+    <BasketContext.Provider value={{ basket, dispatch, addToBasket }}>
       {children}
     </BasketContext.Provider>
   );

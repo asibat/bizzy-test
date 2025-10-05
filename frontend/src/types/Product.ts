@@ -7,3 +7,7 @@ export interface Product {
   sku: string;
   imageUrl?: string;
 }
+
+export interface ProductsQueryData {
+  products: Product[];
+}

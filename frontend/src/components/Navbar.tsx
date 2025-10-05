@@ -1,8 +1,13 @@
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box, Badge } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Link as RouterLink } from "react-router-dom";
+import { useBasket } from "../context/BasketContext";
 
 export default function Navbar() {
+  const { basket } = useBasket();
+
+  const count = basket.items.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <AppBar
       position="sticky"
@@ -31,10 +36,21 @@ export default function Navbar() {
             color="inherit"
             component={RouterLink}
             to="/basket"
-            startIcon={<ShoppingCartIcon />}
             className="hover:bg-blue-700 transition"
           >
-            Basket
+            <Badge
+              badgeContent={count}
+              color="secondary"
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              showZero={false} // hide badge when 0
+              max={99}
+            >
+              <ShoppingCartIcon />
+            </Badge>
+            &nbsp;Basket
           </Button>
         </Box>
       </Toolbar>
