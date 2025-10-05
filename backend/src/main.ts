@@ -21,10 +21,22 @@ const basketRepository = new PrismaBasketRepository(prisma);
 const productService = new ProductService(productRepository);
 const basketService = new BasketService(basketRepository);
 
+export type GraphQLContext = {
+  prisma: PrismaClient;
+  services: {
+    productService: ProductService;
+    basketService: BasketService;
+  };
+  repositories: {
+    productRepository: PrismaProductRepository;
+    basketRepository: PrismaBasketRepository;
+  };
+};
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => ({
+  context: () => ({
     prisma,
     services: {
       productService,
