@@ -1,14 +1,14 @@
 import { PrismaClient } from "@prisma/client";
-import products from "../../data/products.json";
+import customers from "../../data/customers.json";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log(products);
-  for (const product of products) {
-    await prisma.product.upsert({
-      where: { id: product.id },
-      update: product,
-      create: product,
+  console.log(customers);
+  for (const customer of customers) {
+    await prisma.customer.upsert({
+      where: { id: customer.id },
+      update: customer,
+      create: customer,
     });
   }
   console.log("Seeded database with products!");

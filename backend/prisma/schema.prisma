@@ -15,4 +15,56 @@ model Product {
   category    String
   sku         String
   imageUrl    String?
+  basketItems BasketItem[]
+  orderItems  OrderItem[]
+}
+
+model Customer {
+  id             String   @id
+  name           String
+  email          String   @unique
+  isVIP          Boolean  
+  registeredDate DateTime
+  loyaltyPoints  Int
+  baskets        Basket[]
+  orders         Order[]
+}
+
+model Basket {
+  id          String      @id @default(uuid())
+  customer    Customer    @relation(fields: [customerId], references: [id])
+  customerId  String      @unique
+  items       BasketItem[]
+  updatedAt   DateTime    @updatedAt
+}
+
+model BasketItem {
+  id        String   @id @default(uuid())  // or @default(cuid())
+  basket    Basket    @relation(fields: [basketId], references: [id])
+  basketId  String
+  product   Product   @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  customer    Customer    @relation(fields: [customerId], references: [id])
+  customerId  String
+  items       OrderItem[]
+  subtotal    Float
+  discount    Float
+  total       Float
+  status      String
+  createdAt   DateTime    @default(now())
+}
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  order      Order    @relation(fields: [orderId], references: [id])
+  orderId    String
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String
+  quantity   Int
+  unitPrice  Float
 }
