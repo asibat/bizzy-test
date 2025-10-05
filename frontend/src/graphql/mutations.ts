@@ -50,3 +50,31 @@ export const UPDATE_BASKET_ITEM = gql`
     }
   }
 `;
+
+export const UPDATE_DISCOUNT_RULE = gql`
+  mutation UpdateDiscountRule($id: ID!, $input: DiscountRuleInput!) {
+    updateDiscountRule(id: $id, input: $input) {
+      id
+      type
+      name
+      description
+    }
+  }
+`;
+
+export const DELETE_DISCOUNT_RULE = gql`
+  mutation DeleteDiscountRule($id: ID!) {
+    deleteDiscountRule(id: $id)
+  }
+`;
+
+export const CREATE_DISCOUNT_RULE = gql`
+  mutation CreateDiscountRule($input: DiscountRuleInput!) {
+    createDiscountRule(input: $input) {
+      id
+      type
+      name
+      description
+    }
+  }
+`;

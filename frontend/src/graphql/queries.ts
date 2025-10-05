@@ -3,13 +3,18 @@ import { gql } from "@apollo/client";
 export const GET_BASKET = gql`
   query GetBasket($customerId: ID!) {
     getBasket(customerId: $customerId) {
-      id
       customerId
       items {
-        id
-        quantity
         productId
+        quantity
       }
+      subtotal
+      discount
+      discountBreakdown {
+        amount
+        message
+      }
+      total
     }
   }
 `;
@@ -24,6 +29,17 @@ export const GET_PRODUCTS = gql`
       category
       sku
       imageUrl
+    }
+  }
+`;
+
+export const DISCOUNT_RULES_QUERY = gql`
+  query DiscountRules {
+    discountRules {
+      id
+      type
+      name
+      description
     }
   }
 `;
