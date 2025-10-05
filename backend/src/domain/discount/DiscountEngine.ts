@@ -28,6 +28,7 @@ export class DiscountEngine {
       .map((rule) => rule.apply(context))
       .filter((r) => r.amount > 0);
     const totalDiscount = results.reduce((sum, r) => sum + r.amount, 0);
+
     return { totalDiscount, breakdown: results };
   }
 }

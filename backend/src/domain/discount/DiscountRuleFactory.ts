@@ -1,24 +1,42 @@
-import { QuantityDiscountRule } from "./QuantityDiscountRule";
-import { VipCustomerDiscountRule } from "./VipCustomerDiscountRule";
 import { DiscountRule } from "./DiscountRule";
+import { QuantityDiscountRule } from "./discountRules/QuantityDiscountRule";
+import { VipCustomerDiscountRule } from "./discountRules/VipCustomerDiscountRule";
+import { WeekendDiscountRule } from "./discountRules/WeekendDiscountRule";
+
+type DiscountRuleConstructor = (config: any) => DiscountRule;
+
+const ruleRegistry: Record<string, DiscountRuleConstructor> = {
+  quantity: (config) =>
+    new QuantityDiscountRule(
+      config.productId,
+      config.minQty,
+      config.percentOff
+    ),
+  vip: (config) => new VipCustomerDiscountRule(config.percentOff),
+  weekend: (config) =>
+    new WeekendDiscountRule(config.productId, config.minQty, config.percentOff),
+};
+
+export function registerRule(type: string, ctor: DiscountRuleConstructor) {
+  ruleRegistry[type] = ctor;
+}
 
 export function discountRuleFactory(ruleConfig: any): DiscountRule {
-  switch (ruleConfig.type) {
-    case "quantity":
-      return new QuantityDiscountRule(
-        ruleConfig.name,
-        ruleConfig.description,
-        ruleConfig.productId,
-        ruleConfig.minQty,
-        ruleConfig.percentOff
-      );
-    case "vip":
-      return new VipCustomerDiscountRule(
-        ruleConfig.name,
-        ruleConfig.description,
-        ruleConfig.percentOff
-      );
-    default:
-      throw new Error("Unknown discount rule type: " + ruleConfig.type);
-  }
+  const ctor = ruleRegistry[ruleConfig.type];
+  if (!ctor) throw new Error("Unknown discount rule type: " + ruleConfig.type);
+  return ctor(ruleConfig);
 }
+
+registerRule(
+  "weekend",
+  (config) =>
+    new WeekendDiscountRule(config.productId, config.minQty, config.percentOff)
+);
+
+registerRule(
+  "quantity",
+  (config) =>
+    new QuantityDiscountRule(config.productId, config.minQty, config.percentOff)
+);
+
+registerRule("vip", (config) => new VipCustomerDiscountRule(config.percentOff));

@@ -57,8 +57,6 @@ export class BasketService {
     if (!customer) throw new Error("Customer not found");
 
     const orderHistory = await this.customerRepo.findOrderHistory(customerId);
-
-    // 1. Load products
     const products = await this.productRepo.findAll();
 
     // 2. Load discount rules
@@ -70,6 +68,7 @@ export class BasketService {
     const domainRules = ruleEntities.map((rule) =>
       discountRuleFactory({ ...rule, ...(rule.config as object) })
     );
+    console.log(domainRules);
 
     // 4. Set up the discount engine
     const engine = new DiscountEngine(domainRules);
@@ -77,22 +76,19 @@ export class BasketService {
     // 5. Prepare the discount context
     const discountContext = {
       basket: {
-        items: basket.items.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-        })),
+        ...basket,
+        items: basket.items, // (make sure items is actually loaded/fetched!)
       },
-      customer: {
-        id: customer.id,
-        isVIP: customer.isVIP,
-        name: customer.name,
-      },
+      customer,
       orderHistory: (orderHistory || []).map((order) => ({
         id: order.id,
         total: order.total,
         date: order.createdAt.toISOString(),
       })),
-      products,
+      products: products.map((p) => ({
+        ...p,
+        imageUrl: p.imageUrl ?? null,
+      })),
     };
 
     // 6. Apply the discount engine

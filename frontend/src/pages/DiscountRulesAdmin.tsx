@@ -25,23 +25,28 @@ import type { DiscountRule } from "../types/DiscountRule";
 const RULE_TYPE_FIELDS = {
   quantity: [
     { name: "productId", label: "Product ID", type: "text" },
-    { name: "minQuantity", label: "Min Quantity", type: "number" },
+    { name: "minQty", label: "Min Quantity", type: "number" },
     { name: "percentOff", label: "Percent Off (%)", type: "number" },
   ],
   vip: [{ name: "percentOff", label: "Percent Off (%)", type: "number" }],
+  weekend: [
+    { name: "productId", label: "Product ID", type: "text" },
+    { name: "minQty", label: "Min Quantity", type: "number" },
+    { name: "percentOff", label: "Percent Off (%)", type: "number" },
+  ],
 };
 
 function prettyConfig(type: string, config: any) {
   if (type === "quantity") {
     if (
       !config ||
-      config.minQuantity == null ||
+      config.minQty == null ||
       !config.productId ||
       config.percentOff == null
     ) {
       return "—";
     }
-    return `Buy ${config.minQuantity}+ of ${config.productId}, ${config.percentOff}% off`;
+    return `Buy ${config.minQty}+ of ${config.productId}, ${config.percentOff}% off`;
   }
   if (type === "vip") {
     if (!config || config.percentOff == null) {

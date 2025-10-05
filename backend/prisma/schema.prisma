@@ -41,7 +41,6 @@ model Basket {
 model BasketItem {
   id        String   @id @default(uuid())  // or @default(cuid())
   basket    Basket    @relation(fields: [basketId], references: [id])
-  basketId  String
   product   Product   @relation(fields: [productId], references: [id])
   productId String
   quantity  Int

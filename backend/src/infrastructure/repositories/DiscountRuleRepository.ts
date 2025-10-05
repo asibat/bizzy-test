@@ -15,6 +15,7 @@ export interface IDiscountRuleRepository {
     input: Prisma.DiscountRuleCreateInput
   ): Promise<PrismaDiscountRule>;
   delete(id: string): Promise<boolean>;
+  getDiscountRules(): Promise<any[]>;
 }
 export class PrismaDiscountRuleRepository {
   private prisma: PrismaClient;
