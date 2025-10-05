@@ -88,8 +88,25 @@ export const basketResolvers = {
         throw new Error("customerId required");
       }
       try {
-        return await context.services.basketService.getBasket(customerId);
-      } catch {
+        const basket =
+          await context.services.basketService.getBasketWithDiscount(
+            customerId
+          );
+
+        if (!basket) {
+          throw new Error("Basket not found");
+        }
+
+        return {
+          id: basket.id,
+          customerId: basket.customerId,
+          items: basket.items || [],
+          subtotal: basket.subtotal ?? 0,
+          discount: basket.discount ?? 0,
+          discountBreakdown: basket.discountBreakdown ?? [],
+          total: basket.total ?? 0,
+        };
+      } catch (err) {
         throw new Error("Could not get basket");
       }
     },

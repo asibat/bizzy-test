@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Order, PrismaClient } from "@prisma/client";
 import { Customer } from "../../domain/Customer";
 
 export interface ICustomerRepository {
@@ -9,6 +9,7 @@ export interface ICustomerRepository {
   create(customer: Customer): Promise<Customer>;
   update(id: string, customer: Partial<Customer>): Promise<Customer | null>;
   delete(id: string): Promise<boolean>;
+  findOrderHistory(id: string): Promise<Order[]>;
 }
 
 export class PrismaCustomerRepository implements ICustomerRepository {
@@ -61,6 +62,14 @@ export class PrismaCustomerRepository implements ICustomerRepository {
   async delete(id: string): Promise<boolean> {
     await this.prisma.customer.delete({ where: { id } });
     return true;
+  }
+
+  async findOrderHistory(id: string): Promise<Order[]> {
+    const customer = await this.prisma.customer.findUnique({
+      where: { id },
+      include: { orders: true },
+    });
+    return customer?.orders ?? [];
   }
 
   private toDomain(prismaCustomer: any): Customer {
