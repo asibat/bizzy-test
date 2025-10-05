@@ -21,7 +21,24 @@ export default function Navbar() {
           to="/"
           className="font-extrabold tracking-wide text-white no-underline flex-grow"
         >
-          Bizzy Shop
+          <svg
+            width="110"
+            height="32"
+            viewBox="0 0 110 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <text
+              x="0"
+              y="25"
+              font-family="Montserrat, Arial, sans-serif"
+              font-weight="bold"
+              font-size="32"
+              fill="#FFFFFF"
+            >
+              bizzy.
+            </text>
+          </svg>
         </Typography>
         <Box className="flex gap-2">
           <Button

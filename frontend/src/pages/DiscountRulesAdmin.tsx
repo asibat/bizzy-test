@@ -205,7 +205,6 @@ export default function DiscountRulesAdmin() {
           </Grid>
         )}
       </Grid>
-      {/* Modal Dialog for Add/Edit */}
       <Dialog open={open} onClose={closeDialog} maxWidth="sm" fullWidth>
         <form onSubmit={submitRule}>
           <DialogTitle>
