@@ -30,9 +30,19 @@ export const typeDefs = gql`
 
   type Basket {
     id: ID!
-    customerId: ID!
+    customerId: String!
     items: [BasketItem!]!
+    subtotal: Float!
+    discount: Float!
+    discountBreakdown: [DiscountResult!]!
+    total: Float!
+    createdAt: String!
     updatedAt: String!
+  }
+
+  type DiscountResult {
+    amount: Float!
+    message: String!
   }
 
   type OrderItem {
@@ -53,16 +63,33 @@ export const typeDefs = gql`
     createdAt: String!
   }
 
+  type DiscountRule {
+    id: ID!
+    type: String!
+    name: String!
+    description: String
+  }
+
+  input DiscountRuleInput {
+    type: String!
+    name: String!
+    description: String
+  }
+
   type Query {
     products: [Product!]!
     product(id: ID!): Product
     getBasket(customerId: ID!): Basket
+    discountRules: [DiscountRule!]!
+    discountRule(id: ID!): DiscountRule
   }
 
   type Mutation {
     addToBasket(customerId: ID!, productId: ID!, quantity: Int!): Basket
     updateBasketItem(customerId: ID!, productId: ID!, quantity: Int!): Basket
     removeBasketItem(customerId: ID!, productId: ID!): Basket
-    checkout(customerId: ID!): Order!
+    createDiscountRule(input: DiscountRuleInput!): DiscountRule!
+    updateDiscountRule(id: ID!, input: DiscountRuleInput!): DiscountRule!
+    deleteDiscountRule(id: ID!): Boolean!
   }
 `;
