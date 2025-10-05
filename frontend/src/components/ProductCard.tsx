@@ -2,6 +2,8 @@ import type { Product } from "../types/Product";
 import { useMutation } from "@apollo/client/react";
 import { DEFAULT_CUSTOMER_ID } from "../context/BasketContext";
 import { ADD_TO_BASKET } from "../graphql/mutations";
+import AddIcon from "@mui/icons-material/Add";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 export default function ProductCard({ product }: { product: Product }) {
   const [addToBasket] = useMutation(ADD_TO_BASKET);
@@ -39,9 +41,6 @@ export default function ProductCard({ product }: { product: Product }) {
             <span className="px-2 py-1 bg-blue-50 rounded text-xs text-blue-600">
               Accessories
             </span>
-            <span className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-500">
-              QWERTY
-            </span>
           </div>
         </div>
         <div className="flex justify-between items-center mt-2">
@@ -49,10 +48,12 @@ export default function ProductCard({ product }: { product: Product }) {
             ${product.price}
           </span>
           <button
-            className="px-3 py-1 bg-blue-700 text-white rounded hover:bg-blue-800 transition font-semibold"
+            className="flex items-center gap-2 px-3 py-1.5 bg-blue-700 text-white rounded hover:bg-blue-800 transition font-semibold shadow"
             onClick={handleAddToBasket}
+            aria-label="Add to Basket"
           >
-            Add to Basket
+            <AddIcon className="w-5 h-5" />
+            <ShoppingCartIcon className="w-5 h-5" />
           </button>
         </div>
       </div>
