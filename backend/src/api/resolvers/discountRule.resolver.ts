@@ -1,28 +1,18 @@
-// import { Context } from "../../types/context";
-
-// interface DiscountRuleInput {
-//   name: string;
-//   type: string;
-//   description?: string;
-//   parameters: any;
-//   enabled?: boolean;
-//   priority?: number;
-// }
-
-// export const discountRuleResolvers = {
-//   Query: {
-//     discountRules: async (
-//       _: any,
-//       { enabled }: { enabled?: boolean },
-//       context: Context
-//     ) => {
-//       return await context.services.discountRuleService.getDiscountRules(
-//         enabled
-//       );
-//     },
-
-//     discountRule: async (_: any, { id }: { id: string }, context: Context) => {
-//       return await context.services.discountRuleService.getDiscountRuleById(id);
-//     },
-//   },
-// };
+export const discountRuleResolvers = {
+  Query: {
+    discountRules: (_parent: any, _args: any, { prisma }: any) =>
+      prisma.discountRule.findMany(),
+    discountRule: (_parent: any, { id }: any, { prisma }: any) =>
+      prisma.discountRule.findUnique({ where: { id } }),
+  },
+  Mutation: {
+    createDiscountRule: (_parent: any, { input }: any, { prisma }: any) =>
+      prisma.discountRule.create({ data: input }),
+    updateDiscountRule: (_parent: any, { id, input }: any, { prisma }: any) =>
+      prisma.discountRule.update({ where: { id }, data: input }),
+    deleteDiscountRule: async (_parent: any, { id }: any, { prisma }: any) => {
+      await prisma.discountRule.delete({ where: { id } });
+      return true;
+    },
+  },
+};

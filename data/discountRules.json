@@ -1,0 +1,18 @@
+[
+  {
+    "id": "rule-001",
+    "type": "quantity",
+    "name": "Buy 3+ of Product X, 10% off",
+    "description": "Buy 3+ of prod-001 and get 10% off",
+    "config": { "productId": "prod-001", "minQty": 3, "percentOff": 10 },
+    "enabled": true
+  },
+  {
+    "id": "rule-002",
+    "type": "vip",
+    "name": "VIP 5%",
+    "description": "5% off for VIP customers",
+    "config": { "percentOff": 5 },
+    "enabled": true
+  }
+]
