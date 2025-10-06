@@ -7,22 +7,20 @@ import {
   CardContent,
   CardActions,
   Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Select,
-  MenuItem,
   Chip,
-  Stack,
   IconButton,
+  type SelectChangeEvent,
 } from "@mui/material";
 import { Add, Edit, Delete } from "@mui/icons-material";
 import { useDiscountRules } from "../context/DiscountRuleContext";
 import type { DiscountRule } from "../types/DiscountRule";
+import DiscountRuleDialog from "../components/DiscountRuleDialog";
+import type {
+  FieldType,
+  FormDataType,
+} from "../components/DiscountRuleFormFields";
 
-const RULE_TYPE_FIELDS = {
+const RULE_TYPE_FIELDS: Record<string, FieldType[]> = {
   quantity: [
     { name: "productId", label: "Product ID", type: "text" },
     { name: "minQty", label: "Min Quantity", type: "number" },
@@ -41,7 +39,7 @@ const RULE_TYPE_FIELDS = {
   ],
 };
 
-function prettyConfig(type: string, config: any) {
+function prettyConfig(type: string, config: any): string {
   if (type === "quantity") {
     if (
       !config ||
@@ -72,9 +70,7 @@ export default function DiscountRulesAdmin() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<
-    Omit<DiscountRule, "id" | "createdAt" | "updatedAt">
-  >({
+  const [form, setForm] = useState<FormDataType>({
     type: "",
     name: "",
     description: "",
@@ -107,10 +103,11 @@ export default function DiscountRulesAdmin() {
     }
     setOpen(true);
   };
+
   const closeDialog = () => setOpen(false);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent<string>
   ) => {
     const { name, value, type: fieldType } = e.target as HTMLInputElement;
     if (typeFields.some((f) => f.name === name)) {
@@ -205,70 +202,15 @@ export default function DiscountRulesAdmin() {
           </Grid>
         )}
       </Grid>
-      <Dialog open={open} onClose={closeDialog} maxWidth="sm" fullWidth>
-        <form onSubmit={submitRule}>
-          <DialogTitle>
-            {editingId ? "Edit Discount Rule" : "Create New Discount Rule"}
-          </DialogTitle>
-          <DialogContent>
-            <Stack spacing={2}>
-              <Select
-                name="type"
-                value={form.type}
-                onChange={handleInputChange}
-                fullWidth
-                disabled={!!editingId}
-                displayEmpty
-                required
-              >
-                <MenuItem disabled value="">
-                  <em>Select type...</em>
-                </MenuItem>
-                {Object.keys(RULE_TYPE_FIELDS).map((type) => (
-                  <MenuItem value={type} key={type}>
-                    {type}
-                  </MenuItem>
-                ))}
-              </Select>
-              <TextField
-                label="Name"
-                name="name"
-                value={form.name}
-                onChange={handleInputChange}
-                fullWidth
-                required
-              />
-              <TextField
-                label="Description"
-                name="description"
-                value={form.description}
-                onChange={handleInputChange}
-                fullWidth
-              />
-              {typeFields.map((field) => (
-                <TextField
-                  key={field.name}
-                  name={field.name}
-                  label={field.label}
-                  value={form.config[field.name] ?? ""}
-                  type={field.type}
-                  onChange={handleInputChange}
-                  fullWidth
-                  required
-                />
-              ))}
-            </Stack>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={closeDialog} color="inherit">
-              Cancel
-            </Button>
-            <Button type="submit" variant="contained" color="success">
-              {editingId ? "Update" : "Create"}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+      <DiscountRuleDialog
+        open={open}
+        onClose={closeDialog}
+        form={form}
+        typeFields={typeFields}
+        onChange={handleChange}
+        onSubmit={submitRule}
+        editingId={editingId}
+      />
     </Box>
   );
 }
