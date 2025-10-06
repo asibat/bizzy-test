@@ -7,7 +7,14 @@
 From your root project directory, run: `npm run setup` to install dependencies on both `backend` and `frontend`
 
 ## 2. Backend
-- Set up `.env` with your database URL
+- Set up `.env` with your database URL 
+- Add a `DATABASE_URL` variable to your `.env` file.
+  - Example: `DATABASE_URL=postgresql://username:password@localhost:5432/your_db_name`
+  - To quickly start a local Postgres instance with Docker:
+    ```
+        docker run --name bizzy-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=bizzydb -p 5432:5432 -d postgres:15
+    ```
+    - Make sure the app's `DATABASE_URL` in your .env matches the container credentials above for a seamless setup.
 - Run `npx prisma migrate dev` to create schema
 
 ## 3. Start Both Backend & Frontend
