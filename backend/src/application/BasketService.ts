@@ -59,25 +59,30 @@ export class BasketService {
     const orderHistory = await this.customerRepo.findOrderHistory(customerId);
     const products = await this.productRepo.findAll();
 
-    // 2. Load discount rules
+    // Load discount rules
     const ruleEntities = await this.discountRuleRepo.findMany({
       enabled: true,
     });
 
-    // 3. Instantiate domain discount rules
+    // Instantiate domain discount rules
     const domainRules = ruleEntities.map((rule) =>
       discountRuleFactory({ ...rule, ...(rule.config as object) })
     );
     console.log(domainRules);
 
-    // 4. Set up the discount engine
     const engine = new DiscountEngine(domainRules);
 
-    // 5. Prepare the discount context
+    // Prepare the discount context
     const discountContext = {
       basket: {
         ...basket,
-        items: basket.items, // (make sure items is actually loaded/fetched!)
+        items: basket.items
+          .filter((item) => item.id)
+          .map((item) => ({
+            id: item.id!,
+            productId: item.productId,
+            quantity: item.quantity,
+          })),
       },
       customer,
       orderHistory: (orderHistory || []).map((order) => ({
@@ -91,16 +96,16 @@ export class BasketService {
       })),
     };
 
-    // 6. Apply the discount engine
+    // Apply the discount engine
     const { totalDiscount, breakdown } = engine.applyAll(discountContext);
 
-    // 7. Calculate subtotal and total
+    // Calculate subtotal and total
     const subtotal = basket.items.reduce((sum, item) => {
       const p = products.find((prod) => prod.id === item.productId);
       return sum + (p ? p.price * item.quantity : 0);
     }, 0);
 
-    // 8. Return the enriched basket object
+    // Return the enriched basket object
     return {
       ...basket,
       subtotal,

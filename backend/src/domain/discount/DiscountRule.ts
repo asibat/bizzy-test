@@ -5,7 +5,7 @@ export interface DiscountRule {
 }
 
 export type DiscountContext = {
-  basket: Basket & { items: BasketItem[] };
+  basket: Basket & { items: Omit<BasketItem, "basketId">[] };
   products: Product[];
   customer: Omit<Customer, "createdAt" | "updatedAt">;
   orderHistory: Array<{ id: string; total: number; date: string }>;
