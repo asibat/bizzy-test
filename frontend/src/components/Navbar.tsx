@@ -31,9 +31,9 @@ export default function Navbar() {
             <text
               x="0"
               y="25"
-              font-family="Montserrat, Arial, sans-serif"
-              font-weight="bold"
-              font-size="32"
+              fontFamily="Montserrat, Arial, sans-serif"
+              fontWeight="bold"
+              fontSize="32"
               fill="#FFFFFF"
             >
               bizzy.
